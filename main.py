@@ -1,7 +1,6 @@
 import streamlit as st
 from PIL import Image
 import numpy as np
-import cv2
 from keras.models import load_model
 
 # Загрузка предобученной модели
@@ -14,10 +13,10 @@ def preprocess_image(image):
     image = np.array(image)  # Преобразование в массив NumPy
 
     # Изменение размера до 28x28 пикселей (стандартный размер для MNIST)
-    resized_image = cv2.resize(image, (28, 28), interpolation=cv2.INTER_AREA)
+    resized_image = Image.fromarray(image).resize((28, 28), Image.ANTIALIAS)
 
     # Инверсия цветов (MNIST использует белые цифры на черном фоне)
-    inverted_image = 255 - resized_image
+    inverted_image = 255 - np.array(resized_image)
 
     # Нормализация значений пикселей в диапазон [0, 1]
     normalized_image = inverted_image / 255.0
