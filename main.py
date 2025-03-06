@@ -48,7 +48,7 @@ uploaded_file = st.file_uploader("Выберите изображение...", t
 if uploaded_file is not None:
     # Открытие и отображение изображения
     image = Image.open(uploaded_file)
-    st.image(image, caption='Загруженное изображение.', use_column_width=True)
+    st.image(image, caption='Загруженное изображение.', use_container_width=True)
     
     # Классификация изображения
     try:
