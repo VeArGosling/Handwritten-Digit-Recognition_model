@@ -42,7 +42,6 @@ Pygments
 python-dateutil
 pytz
 referencing
-requests
 rich
 rpds-py
 six
