@@ -13,7 +13,7 @@ def preprocess_image(img):
     img = np.array(img)  # Преобразование в массив NumPy
 
     # Изменение размера до 28x28 пикселей (стандартный размер для MNIST)
-    resized_image = Image.fromarray(img).resize((28, 28), Image.ANTIALIAS)
+    resized_image = Image.fromarray(img).resize((28, 28), Image.Resampling.LANCZOS)
 
     # Инверсия цветов (MNIST использует белые цифры на черном фоне)
     inverted_image = 255 - np.array(resized_image)
