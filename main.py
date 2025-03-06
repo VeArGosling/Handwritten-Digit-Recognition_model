@@ -7,13 +7,13 @@ from keras.models import load_model
 model = load_model('Digit_Recognition_model.h5')
 
 # Функция предобработки изображения
-def preprocess_image(image):
+def preprocess_image(img):
     # Преобразование изображения в градации серого
-    image = image.convert('L')  # Конвертация в черно-белое изображение
-    image = np.array(image)  # Преобразование в массив NumPy
+    img = img.convert('L')  # Конвертация в черно-белое изображение
+    img = np.array(img)  # Преобразование в массив NumPy
 
     # Изменение размера до 28x28 пикселей (стандартный размер для MNIST)
-    resized_image = Image.fromarray(image).resize((28, 28), Image.ANTIALIAS)
+    resized_image = Image.fromarray(img).resize((28, 28), Image.ANTIALIAS)
 
     # Инверсия цветов (MNIST использует белые цифры на черном фоне)
     inverted_image = 255 - np.array(resized_image)
