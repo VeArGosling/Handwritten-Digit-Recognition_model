@@ -40,6 +40,9 @@ def classify_image(image):
     return predicted_digit
 
 # Настройка фона страницы
+import base64  # Для работы с Base64
+
+# Настройка фона страницы
 def set_background(image_path):
     """
     Устанавливает фоновое изображение для страницы Streamlit.
@@ -47,12 +50,23 @@ def set_background(image_path):
     :param image_path: Путь к файлу изображения.
     """
     with open(image_path, "rb") as image_file:
-        encoded_string = image_file.read()
+        # Чтение файла в байтах и преобразование в Base64
+        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        
+        # Определение MIME-типа изображения на основе расширения файла
+        if image_path.endswith(".jpg") or image_path.endswith(".jpeg"):
+            mime_type = "image/jpeg"
+        elif image_path.endswith(".png"):
+            mime_type = "image/png"
+        else:
+            raise ValueError("Неподдерживаемый формат изображения. Используйте JPG или PNG.")
+        
+        # Внедрение CSS через st.markdown
         st.markdown(
             f"""
             <style>
             .stApp {{
-                background-image: url(data:image/png;base64,{encoded_string.decode("utf-8")});
+                background-image: url(data:{mime_type};base64,{encoded_string});
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-attachment: fixed;
