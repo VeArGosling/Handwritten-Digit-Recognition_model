@@ -39,6 +39,32 @@ def classify_image(image):
 
     return predicted_digit
 
+# Настройка фона страницы
+def set_background(image_path):
+    """
+    Устанавливает фоновое изображение для страницы Streamlit.
+
+    :param image_path: Путь к файлу изображения.
+    """
+    with open(image_path, "rb") as image_file:
+        encoded_string = image_file.read()
+        st.markdown(
+            f"""
+            <style>
+            .stApp {{
+                background-image: url(data:image/png;base64,{encoded_string.decode("utf-8")});
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            }}
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+# Установка фонового изображения
+set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
+
 # Заголовок приложения
 st.title("Распознавание рукописных цифр")
 
