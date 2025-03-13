@@ -39,6 +39,18 @@ def classify_image(image):
 
     return predicted_digit
 
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Vedenin_Wikipedia_Isaev_600.JPG');
+        background-size: cover;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Заголовок приложения
 st.title("Распознавание рукописных цифр")
 
