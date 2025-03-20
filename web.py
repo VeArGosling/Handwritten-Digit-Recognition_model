@@ -108,7 +108,7 @@ if uploaded_file is not None:
     # Классификация изображения
     try:
         #result, conf = classify_image(image)
-        st.markdown(f'">Предсказанная цифра: {result}</p>', unsafe_allow_html=True)
+        st.write(f"Предсказанная цифра: {result}")
         #st.markdown(f'<p style="color: white;">Уверенность в предсказании: {conf}</p>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Произошла ошибка: {e}")
