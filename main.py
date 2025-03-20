@@ -19,10 +19,9 @@ def getBestShift(img):
     return shiftx, shifty
 
 def shift(img, sx, sy, rows, cols):
-    # Создаем новое изображение с тем же размером
     shifted = np.zeros_like(img)
     
-    # Вычисляем новые координаты после сдвига по оси X
+    # Сдвиг по X
     if sx > 0:
         shifted[:, sx:] = img[:, :-sx]
     elif sx < 0:
@@ -30,9 +29,9 @@ def shift(img, sx, sy, rows, cols):
     else:
         shifted = img
     
-    # Вычисляем новые координаты после сдвига по оси Y
+    # Сдвиг по Y
     if sy > 0:
-        shifted[sy:, :] = img[:rows-sy, :]
+        shifted[sy:, :] = img[:-sy, :]
     elif sy < 0:
         shifted[:sy, :] = img[-sy:, :]
     else:
@@ -42,15 +41,15 @@ def shift(img, sx, sy, rows, cols):
 
 def rec_digit(uploaded_file):
     # Загрузка изображения
-    img = Image.open(uploaded_file).convert('L')  # Конвертация в градации серого
-    img = ImageOps.invert(img)  # Инверсия цветов (белые цифры на чёрном фоне)
-    gray = np.array(img)  # Преобразование в массив NumPy
+    img = Image.open(uploaded_file).convert('L')
+    img = ImageOps.invert(img)
+    gray = np.array(img)
 
-    # Применяем пороговую обработку
+    # Пороговая обработка
     threshold = 128
     gray = np.where(gray > threshold, 255, 0).astype(np.uint8)
 
-    # Удаляем нулевые строки и столбцы
+    # Удаление пустых границ
     while np.sum(gray[0]) == 0:
         gray = gray[1:]
     while np.sum(gray[:, 0]) == 0:
@@ -62,7 +61,7 @@ def rec_digit(uploaded_file):
 
     rows, cols = gray.shape
 
-    # Изменяем размер, чтобы помещалось в box 20x20 пикселей
+    # Масштабирование до 20x20
     if rows > cols:
         factor = 20.0 / rows
         rows = 20
@@ -71,35 +70,29 @@ def rec_digit(uploaded_file):
         factor = 20.0 / cols
         cols = 20
         rows = int(round(rows * factor))
+    gray = np.array(Image.fromarray(gray).resize((cols, rows), Image.Resampling.LANCZOS))
 
-    resized_img = Image.fromarray(gray).resize((cols, rows), Image.Resampling.LANCZOS)
-    gray = np.array(resized_img)
-
-    # Расширяем до размера 28x28
-    colsPadding = (int(math.ceil((28 - cols) / 2.0)), int(math.floor((28 - cols) / 2.0)))
-    rowsPadding = (int(math.ceil((28 - rows) / 2.0)), int(math.floor((28 - rows) / 2.0)))
+    # Добавление паддингов до 28x28
+    colsPadding = (int(math.ceil((28 - cols)/2)), int(math.floor((28 - cols)/2)))
+    rowsPadding = (int(math.ceil((28 - rows)/2)), int(math.floor((28 - rows)/2)))
     gray = np.pad(gray, (rowsPadding, colsPadding), 'constant', constant_values=0)
 
-    # Сдвигаем центр масс
+    # Ограничение сдвига
     shiftx, shifty = getBestShift(gray)
+    max_shift_x = cols // 2
+    max_shift_y = rows // 2
+    shiftx = np.clip(shiftx, -max_shift_x, max_shift_x)
+    shifty = np.clip(shifty, -max_shift_y, max_shift_y)
 
-    # Проверяем допустимость сдвига
-    if abs(shiftx) >= cols or abs(shifty) >= rows:
-        st.error("Ошибка: Изображение слишком маленькое для сдвига.")
-        return None
-
+    # Применение сдвига
     gray = shift(gray, shiftx, shifty, rows, cols)
 
-    # Сохраняем обработанное изображение
+    # Сохранение и вывод
     processed_img = Image.fromarray(gray.astype(np.uint8))
-    output_path = f"gray_{uploaded_file.name}"  # Используем имя загруженного файла
-    processed_img.save(output_path)
-
-    # Нормализация и подготовка данных
+    processed_img.save(f"gray_{uploaded_file.name}")
     img = gray / 255.0
-    img = np.array(img).reshape(-1, 28, 28, 1)
-    out = str(np.argmax(model.predict(img)))
-    return out
+    img = img.reshape(-1, 28, 28, 1)
+    return str(np.argmax(model.predict(img)))
 
 # Настройка фона страницы
 import base64  # Для работы с Base64
