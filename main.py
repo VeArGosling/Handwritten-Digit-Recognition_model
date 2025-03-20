@@ -37,7 +37,11 @@ def classify_image(image):
     # Определение предсказанной цифры
     predicted_digit = np.argmax(predictions, axis=1)[0]
 
-    return predicted_digit
+    # Получение уверенности в предсказании
+    confidence = np.max(predictions)  # Максимальная вероятность для предсказанной цифры
+    confidence = round(confidencce*100, 2)
+
+    return predicted_digit, confidence
 
 # Настройка фона страницы
 import base64  # Для работы с Base64
@@ -92,7 +96,8 @@ if uploaded_file is not None:
     
     # Классификация изображения
     try:
-        result = classify_image(image)
+        result, conf = classify_image(image)
         st.markdown(f'<p style="color: white;">Предсказанная цифра: {result}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="color: white;">Уверенность в предсказании: {conf}</p>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Произошла ошибка: {e}")
