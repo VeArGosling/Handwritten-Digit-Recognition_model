@@ -16,7 +16,8 @@ def preprocess_image(img):
     resized_image = np.array(resized_image)
 
     # Инверсия цветов (MNIST использует белые цифры на черном фоне)
-    #inverted_image = 255 - resized_image
+    inverted_image = 255 - resized_image
+    #уточнить
 
     # Нормализация значений пикселей в диапазон [0, 1]
     normalized_image = inverted_image / 255.0
