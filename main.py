@@ -32,9 +32,11 @@ def shift(img, sx, sy, rows, cols):
     
     # Вычисляем новые координаты после сдвига по оси Y
     if sy > 0:
-        shifted[sy:, :] = shifted[:rows-sy, :]
+        shifted[sy:, :] = img[:rows-sy, :]
     elif sy < 0:
-        shifted[:sy, :] = shifted[-sy:, :]
+        shifted[:sy, :] = img[-sy:, :]
+    else:
+        shifted = img
     
     return shifted
 
@@ -80,6 +82,12 @@ def rec_digit(uploaded_file):
 
     # Сдвигаем центр масс
     shiftx, shifty = getBestShift(gray)
+
+    # Проверяем допустимость сдвига
+    if abs(shiftx) >= cols or abs(shifty) >= rows:
+        st.error("Ошибка: Изображение слишком маленькое для сдвига.")
+        return None
+
     gray = shift(gray, shiftx, shifty, rows, cols)
 
     # Сохраняем обработанное изображение
@@ -134,7 +142,7 @@ def set_background(image_path):
 set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
 
 # Заголовок приложения
-st.markdown('<h1 style="color: white;">Распознавание AZOV рукописных цифр</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="color: white;">Распознавание AZOV 222 рукописных цифр</h1>', unsafe_allow_html=True)
 
 # Загрузка изображения
 uploaded_file = st.file_uploader("Выберите изображение...", type=["jpg", "jpeg", "png"])
