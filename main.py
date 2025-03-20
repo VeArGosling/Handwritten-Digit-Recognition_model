@@ -80,7 +80,7 @@ def set_background(image_path):
 set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
 
 # Заголовок приложения
-st.title("Распознавание рукописных цифр")
+st.markdown('<h1 style="color: white;">Распознавание рукописных цифр</h1>', unsafe_allow_html=True)
 
 # Загрузка изображения
 uploaded_file = st.file_uploader("Выберите изображение...", type=["jpg", "jpeg", "png"])
@@ -93,6 +93,6 @@ if uploaded_file is not None:
     # Классификация изображения
     try:
         result = classify_image(image)
-        st.write(f"Предсказанная цифра: {result}")
+        st.markdown(f'<p style="color: white;">Предсказанная цифра: {result}</p>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Произошла ошибка: {e}")
