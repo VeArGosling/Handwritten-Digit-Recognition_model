@@ -38,7 +38,7 @@ def classify_image(image):
     predicted_digit = np.argmax(predictions, axis=1)[0]
 
     # Получение уверенности в предсказании
-    confidence = np.max(predictions)  # Максимальная вероятность для предсказанной цифры
+    confidence = predictions  # Максимальная вероятность для предсказанной цифры
     #confidence = round(confidence*100, 2)
 
     return predicted_digit, confidence
