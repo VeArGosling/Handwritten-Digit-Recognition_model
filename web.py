@@ -95,7 +95,7 @@ def rec_digit(uploaded_file):
     return str(np.argmax(model.predict(img)))
 
 # Заголовок приложения
-st.markdown('<h1 style="color: white;">Распознавание AZOV 222 рукописных цифр</h1>', unsafe_allow_html=True)
+st.markdown('">Распознавание AZOV 222 рукописных цифр</h1>', unsafe_allow_html=True)
 
 # Загрузка изображения
 uploaded_file = st.file_uploader("Выберите изображение...", type=["jpg", "jpeg", "png"])
@@ -108,7 +108,7 @@ if uploaded_file is not None:
     # Классификация изображения
     try:
         #result, conf = classify_image(image)
-        st.markdown(f'<p style="color: white;">Предсказанная цифра: {result}</p>', unsafe_allow_html=True)
+        st.markdown(f'">Предсказанная цифра: {result}</p>', unsafe_allow_html=True)
         #st.markdown(f'<p style="color: white;">Уверенность в предсказании: {conf}</p>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Произошла ошибка: {e}")
