@@ -4,9 +4,8 @@ import numpy as np
 from keras.models import load_model
 
 # Загрузка предобученной модели
-model = load_model('Digit_Recognition_model.h5')
+model = load_model('Digit_Recognition_model_v2.h5')
 
-# Функция предобработки изображения
 def preprocess_image(img):
     # Преобразование изображения в градации серого
     img = img.convert('L')  # Конвертация в черно-белое изображение
@@ -14,19 +13,19 @@ def preprocess_image(img):
 
     # Изменение размера до 28x28 пикселей
     resized_image = Image.fromarray(img).resize((28, 28), Image.Resampling.LANCZOS)
+    resized_image = np.array(resized_image)
 
     # Инверсия цветов (MNIST использует белые цифры на черном фоне)
-    inverted_image = 255 - np.array(resized_image)
+    #inverted_image = 255 - resized_image
 
     # Нормализация значений пикселей в диапазон [0, 1]
     normalized_image = inverted_image / 255.0
 
-    # Добавление размерности для соответствия входу модели (1, 28, 28)
-    reshaped_image = normalized_image.reshape(1, 28, 28)
+    # Добавление размерности для соответствия входу модели (1, 28, 28, 1)
+    reshaped_image = normalized_image.reshape(1, 28, 28, 1)
 
     return reshaped_image
 
-# Функция классификации изображения
 def classify_image(image):
     # Предобработка изображения
     processed_image = preprocess_image(image)
@@ -38,8 +37,8 @@ def classify_image(image):
     predicted_digit = np.argmax(predictions, axis=1)[0]
 
     # Получение уверенности в предсказании
-    confidence = predictions  # Максимальная вероятность для предсказанной цифры
-    #confidence = round(confidence*100, 2)
+    confidence = np.max(predictions)  # Максимальная вероятность для предсказанной цифры
+    confidence = round(confidence * 100, 2)  # Округление до двух знаков после запятой
 
     return predicted_digit, confidence
 
