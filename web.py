@@ -94,46 +94,6 @@ def rec_digit(uploaded_file):
     img = img.reshape(-1, 28, 28, 1)
     return str(np.argmax(model.predict(img)))
 
-# Настройка фона страницы
-import base64  # Для работы с Base64
-
-# Настройка фона страницы
-def set_background(image_path):
-    """
-    Устанавливает фоновое изображение для страницы Streamlit.
-
-    :param image_path: Путь к файлу изображения.
-    """
-    with open(image_path, "rb") as image_file:
-        # Чтение файла в байтах и преобразование в Base64
-        encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
-        
-        # Определение MIME-типа изображения на основе расширения файла
-        if image_path.endswith(".jpg") or image_path.endswith(".jpeg"):
-            mime_type = "image/jpeg"
-        elif image_path.endswith(".png"):
-            mime_type = "image/png"
-        else:
-            raise ValueError("Неподдерживаемый формат изображения. Используйте JPG или PNG.")
-        
-         # Внедрение CSS через st.markdown
-        st.markdown(
-            f"""
-             <style>
-             .stApp {{
-                 background-image: url(data:{mime_type};base64,{encoded_string});
-                 background-size: cover;
-                 background-repeat: no-repeat;
-                 background-attachment: fixed;
-             }}
-             </style>
-             """,
-            unsafe_allow_html=True
-        )
-
-# Установка фонового изображения
-set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
-
 # Заголовок приложения
 st.markdown('<h1 style="color: white;">Распознавание AZOV 222 рукописных цифр</h1>', unsafe_allow_html=True)
 
