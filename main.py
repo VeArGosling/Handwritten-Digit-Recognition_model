@@ -61,23 +61,23 @@ def set_background(image_path):
         else:
             raise ValueError("Неподдерживаемый формат изображения. Используйте JPG или PNG.")
         
-#         # Внедрение CSS через st.markdown
-#         st.markdown(
-#             f"""
-#             <style>
-#             .stApp {{
-#                 background-image: url(data:{mime_type};base64,{encoded_string});
-#                 background-size: cover;
-#                 background-repeat: no-repeat;
-#                 background-attachment: fixed;
-#             }}
-#             </style>
-#             """,
-#             unsafe_allow_html=True
-#         )
+         # Внедрение CSS через st.markdown
+         st.markdown(
+            f"""
+             <style>
+             .stApp {{
+                 background-image: url(data:{mime_type};base64,{encoded_string});
+                 background-size: cover;
+                 background-repeat: no-repeat;
+                 background-attachment: fixed;
+             }}
+             </style>
+             """,
+            unsafe_allow_html=True
+        )
 
-# # Установка фонового изображения
-# set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
+ # Установка фонового изображения
+ set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
 
 # Заголовок приложения
 st.title("Распознавание рукописных цифр")
