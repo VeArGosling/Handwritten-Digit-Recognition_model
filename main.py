@@ -4,44 +4,94 @@ import numpy as np
 from keras.models import load_model
 
 # Загрузка предобученной модели
-model = load_model('Digit_Recognition_model_v2.h5')
+model = load_model('digit_model.h5')
 
-def preprocess_image(img):
-    # Преобразование изображения в градации серого
-    img = img.convert('L')  # Конвертация в черно-белое изображение
-    img = np.array(img)  # Преобразование в массив NumPy
+from scipy.ndimage.measurements import center_of_mass
+import math
+from PIL import Image, ImageOps
+import numpy as np
 
-    # Изменение размера до 28x28 пикселей
-    resized_image = Image.fromarray(img).resize((28, 28), Image.Resampling.LANCZOS)
-    resized_image = np.array(resized_image)
+def getBestShift(img):
+    cy, cx = center_of_mass(img)
+    
+    rows, cols = img.shape
+    shiftx = np.round(cols / 2.0 - cx).astype(int)
+    shifty = np.round(rows / 2.0 - cy).astype(int)
 
-    # Инверсия цветов (MNIST использует белые цифры на черном фоне)
-    inverted_image = 255 - resized_image
-    #уточнить
+    return shiftx, shifty
 
-    # Нормализация значений пикселей в диапазон [0, 1]
-    normalized_image = inverted_image / 255.0
+def shift(img, sx, sy):
+    # Создаем новое изображение с тем же размером
+    shifted = np.zeros_like(img)
+    
+    # Вычисляем новые координаты после сдвига
+    if sx > 0:
+        shifted[:, sx:] = img[:, :-sx]
+    elif sx < 0:
+        shifted[:, :sx] = img[:, -sx:]
+    else:
+        shifted = img
+    
+    if sy > 0:
+        shifted[sy:, :] = shifted[:rows-sy, :]
+    elif sy < 0:
+        shifted[:sy, :] = shifted[-sy:, :]
+    
+    return shifted
 
-    # Добавление размерности для соответствия входу модели (1, 28, 28, 1)
-    reshaped_image = normalized_image.reshape(1, 28, 28, 1)
+def rec_digit(img_path):
+    # Загрузка изображения
+    img = Image.open(img_path).convert('L')  # Конвертация в градации серого
+    img = ImageOps.invert(img)  # Инверсия цветов (белые цифры на чёрном фоне)
+    gray = np.array(img)  # Преобразование в массив NumPy
 
-    return reshaped_image
+    # Применяем пороговую обработку
+    threshold = 128
+    gray = np.where(gray > threshold, 255, 0).astype(np.uint8)
 
-def classify_image(image):
-    # Предобработка изображения
-    processed_image = preprocess_image(image)
+    # Удаляем нулевые строки и столбцы
+    while np.sum(gray[0]) == 0:
+        gray = gray[1:]
+    while np.sum(gray[:, 0]) == 0:
+        gray = np.delete(gray, 0, axis=1)
+    while np.sum(gray[-1]) == 0:
+        gray = gray[:-1]
+    while np.sum(gray[:, -1]) == 0:
+        gray = np.delete(gray, -1, axis=1)
 
-    # Получение предсказания от модели
-    predictions = model.predict(processed_image)
+    rows, cols = gray.shape
 
-    # Определение предсказанной цифры
-    predicted_digit = np.argmax(predictions, axis=1)[0]
+    # Изменяем размер, чтобы помещалось в box 20x20 пикселей
+    if rows > cols:
+        factor = 20.0 / rows
+        rows = 20
+        cols = int(round(cols * factor))
+    else:
+        factor = 20.0 / cols
+        cols = 20
+        rows = int(round(rows * factor))
 
-    # Получение уверенности в предсказании
-    confidence = np.max(predictions)  # Максимальная вероятность для предсказанной цифры
-    confidence = round(confidence * 100, 2)  # Округление до двух знаков после запятой
+    resized_img = Image.fromarray(gray).resize((cols, rows), Image.Resampling.LANCZOS)
+    gray = np.array(resized_img)
 
-    return predicted_digit, confidence
+    # Расширяем до размера 28x28
+    colsPadding = (int(math.ceil((28 - cols) / 2.0)), int(math.floor((28 - cols) / 2.0)))
+    rowsPadding = (int(math.ceil((28 - rows) / 2.0)), int(math.floor((28 - rows) / 2.0)))
+    gray = np.pad(gray, (rowsPadding, colsPadding), 'constant', constant_values=0)
+
+    # Сдвигаем центр масс
+    shiftx, shifty = getBestShift(gray)
+    gray = shift(gray, shiftx, shifty)
+
+    # Сохраняем обработанное изображение
+    processed_img = Image.fromarray(gray.astype(np.uint8))
+    processed_img.save('gray_' + img_path)
+
+    # Нормализация и подготовка данных
+    img = gray / 255.0
+    img = np.array(img).reshape(-1, 28, 28, 1)
+    out = str(np.argmax(model.predict(img)))
+    return out
 
 # Настройка фона страницы
 import base64  # Для работы с Base64
@@ -93,11 +143,14 @@ if uploaded_file is not None:
     # Открытие и отображение изображения
     image = Image.open(uploaded_file)
     st.image(image, caption='Загруженное изображение.', use_container_width=True)
-    
+    reasult = rec_digit(uploaded_file)
     # Классификация изображения
     try:
-        result, conf = classify_image(image)
+        #result, conf = classify_image(image)
         st.markdown(f'<p style="color: white;">Предсказанная цифра: {result}</p>', unsafe_allow_html=True)
-        st.markdown(f'<p style="color: white;">Уверенность в предсказании: {conf}</p>', unsafe_allow_html=True)
+        #st.markdown(f'<p style="color: white;">Уверенность в предсказании: {conf}</p>', unsafe_allow_html=True)
     except Exception as e:
         st.error(f"Произошла ошибка: {e}")
+
+
+
