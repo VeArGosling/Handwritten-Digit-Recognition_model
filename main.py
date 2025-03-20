@@ -85,7 +85,8 @@ def rec_digit(img_path):
 
     # Сохраняем обработанное изображение
     processed_img = Image.fromarray(gray.astype(np.uint8))
-    processed_img.save('gray_' + img_path)
+    output_path = f"gray_{uploaded_file.name}"  # Используем имя загруженного файла
+    processed_img.save(output_path)
 
     # Нормализация и подготовка данных
     img = gray / 255.0
@@ -143,7 +144,7 @@ if uploaded_file is not None:
     # Открытие и отображение изображения
     image = Image.open(uploaded_file)
     st.image(image, caption='Загруженное изображение.', use_container_width=True)
-    reasult = rec_digit(uploaded_file)
+    result = rec_digit(uploaded_file)
     # Классификация изображения
     try:
         #result, conf = classify_image(image)
