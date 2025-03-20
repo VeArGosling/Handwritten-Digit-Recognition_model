@@ -39,7 +39,7 @@ def classify_image(image):
 
     # Получение уверенности в предсказании
     confidence = np.max(predictions)  # Максимальная вероятность для предсказанной цифры
-    confidence = round(confidence*100, 2)
+    #confidence = round(confidence*100, 2)
 
     return predicted_digit, confidence
 
