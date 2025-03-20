@@ -95,7 +95,7 @@ def rec_digit(uploaded_file):
     return str(np.argmax(model.predict(img)))
 
 # Заголовок приложения
-st.markdown('">Распознавание рукописных цифр</h1>', unsafe_allow_html=True)
+st.markdown('"Распознавание рукописных цифр</h1>', unsafe_allow_html=True)
 
 # Загрузка изображения
 uploaded_file = st.file_uploader("Выберите изображение...", type=["jpg", "jpeg", "png"])
