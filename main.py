@@ -134,7 +134,7 @@ def set_background(image_path):
 set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
 
 # Заголовок приложения
-st.markdown('<h1 style="color: white;">Распознавание рукописных цифр</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="color: white;">Распознавание SSGTYSTFTYUSFYTUSFUYFSUYTF рукописных цифр</h1>', unsafe_allow_html=True)
 
 # Загрузка изображения
 uploaded_file = st.file_uploader("Выберите изображение...", type=["jpg", "jpeg", "png"])
