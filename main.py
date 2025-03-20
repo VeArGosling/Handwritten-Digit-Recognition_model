@@ -13,18 +13,16 @@ import numpy as np
 
 def getBestShift(img):
     cy, cx = center_of_mass(img)
-    
     rows, cols = img.shape
     shiftx = np.round(cols / 2.0 - cx).astype(int)
     shifty = np.round(rows / 2.0 - cy).astype(int)
-
     return shiftx, shifty
 
-def shift(img, sx, sy):
+def shift(img, sx, sy, rows, cols):
     # Создаем новое изображение с тем же размером
     shifted = np.zeros_like(img)
     
-    # Вычисляем новые координаты после сдвига
+    # Вычисляем новые координаты после сдвига по оси X
     if sx > 0:
         shifted[:, sx:] = img[:, :-sx]
     elif sx < 0:
@@ -32,6 +30,7 @@ def shift(img, sx, sy):
     else:
         shifted = img
     
+    # Вычисляем новые координаты после сдвига по оси Y
     if sy > 0:
         shifted[sy:, :] = shifted[:rows-sy, :]
     elif sy < 0:
@@ -39,9 +38,9 @@ def shift(img, sx, sy):
     
     return shifted
 
-def rec_digit(img_path):
+def rec_digit(uploaded_file):
     # Загрузка изображения
-    img = Image.open(img_path).convert('L')  # Конвертация в градации серого
+    img = Image.open(uploaded_file).convert('L')  # Конвертация в градации серого
     img = ImageOps.invert(img)  # Инверсия цветов (белые цифры на чёрном фоне)
     gray = np.array(img)  # Преобразование в массив NumPy
 
@@ -81,7 +80,7 @@ def rec_digit(img_path):
 
     # Сдвигаем центр масс
     shiftx, shifty = getBestShift(gray)
-    gray = shift(gray, shiftx, shifty)
+    gray = shift(gray, shiftx, shifty, rows, cols)
 
     # Сохраняем обработанное изображение
     processed_img = Image.fromarray(gray.astype(np.uint8))
@@ -135,7 +134,7 @@ def set_background(image_path):
 set_background("background.jpg")  # Убедитесь, что файл "background.jpg" находится в той же директории
 
 # Заголовок приложения
-st.markdown('<h1 style="color: white;">Распознавание SSGTYSTFTYUSFYTUSFUYFSUYTF рукописных цифр</h1>', unsafe_allow_html=True)
+st.markdown('<h1 style="color: white;">Распознавание AZOV рукописных цифр</h1>', unsafe_allow_html=True)
 
 # Загрузка изображения
 uploaded_file = st.file_uploader("Выберите изображение...", type=["jpg", "jpeg", "png"])
