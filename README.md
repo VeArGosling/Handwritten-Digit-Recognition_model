@@ -10,5 +10,7 @@
 
 ### Структура:
 * Handwritten_Digit_Recognition.ipynb - код модели
+  
 * digit_model.h5 - модель
+  
 * web.py - код для веб-интерфейса
